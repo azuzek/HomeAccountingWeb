@@ -1,0 +1,38 @@
+@CHARSET "ISO-8859-1";
+#header {
+	border-style: solid;
+	height=20em;
+}
+#span-user {
+	position: absolute;
+	right: 1em;
+}
+#footer {
+	border-style: solid;
+	height=20em;
+}
+.error { color: red }
+.horizontal-list {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #f1f1f1;
+}
+.horizontal-list-item {
+	float: left;
+    width: 7em;
+}
+.menu-anchor {
+	display: block;
+    text-decoration: none;
+    color: #000;
+}
+.menu-anchor:hover {
+    background-color: #555;
+    color: white;
+}
+.active {
+    background-color: #d20000;
+    color: white;
+}

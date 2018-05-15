@@ -1,0 +1,30 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<title>Diario</title>
+</head>
+<body>
+<table>
+	<tr>
+		<td>
+			Fecha
+		</td>
+		<td>
+			Descripción
+		</td>
+		<td>
+			Debe
+		</td>
+		<td>
+			Haber
+		</td>
+	</tr>
+	<c:forEach var="entry" items="${entries.currentElements}">
+		<tr>
+			<td>${entry.date}</td>
+			<td>${entry.nonEmptyDescription}</td>
+			<td>Debit</td>
+			<td>Credit</td>
+		</tr>
+	</c:forEach>
+</table>
+</body>
+</html>
