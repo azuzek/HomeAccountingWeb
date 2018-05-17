@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
  * @author MLA
  *
  */
-@Entity
 public class User extends ModelObject {
 	private String userId;
 	private String password;

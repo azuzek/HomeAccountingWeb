@@ -8,11 +8,11 @@
 			<attribute name="owner.project.facets" value="jst.web;#system#"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jre1.8.0_162">
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="C:/Users/azuze/hibernate-search-5.8.0.Final/dist/hibernate-search-orm-5.8.0.Final.jar"/>
+	<classpathentry kind="lib" path="C:/Users/MLA/hibernate-release-5.3.0.Final/lib/required/hibernate-core-5.3.0.Final.jar"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
