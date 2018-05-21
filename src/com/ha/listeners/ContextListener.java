@@ -40,19 +40,21 @@ public final class ContextListener implements ServletContextListener {
      */
     public void contextInitialized(ServletContextEvent event)  {
 
+
+    	context = event.getServletContext();
 		// A SessionFactory is set up once for an application!
 		final StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
 				.configure() // configures settings from hibernate.cfg.xml
 				.build();
 		try {
 			sessionFactory = new MetadataSources( registry ).buildMetadata().buildSessionFactory();
+			context.setAttribute("sessionFactory", sessionFactory);
 		}
 		catch (Exception e) {
 			// The registry would be destroyed by the SessionFactory, but we had trouble building the SessionFactory
 			// so destroy it manually.
 			StandardServiceRegistryBuilder.destroy( registry );
 		}
-    	context = event.getServletContext();
 /*    	try {
     		HADataSource haDataSource = new HADataSource();
     		context.setAttribute("haDataSource", haDataSource);
