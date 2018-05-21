@@ -9,6 +9,11 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+
 import javax.servlet.http.Cookie;
 
 import com.ha.database.DBResources;
@@ -40,25 +45,29 @@ public class LoginController extends HttpServlet {
      */
     public void init() throws ServletException {
     	// get HADataSource from Servlet context.
-    	haDataSource = (HADataSource) this.getServletContext().getAttribute("haDataSource");
+    	// haDataSource = (HADataSource) this.getServletContext().getAttribute("haDataSource");
     }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		Session session = (Session) ((SessionFactory) this.getServletContext().getAttribute("sessionFactory")).openSession();
 		if (request.getParameter("ok") != null) {
 			// User pressed OK button. Process login
-			DBResources dbResources = new DBResources();
+/* 			DBResources dbResources = new DBResources();
 			dbResources.setHaDataSource(haDataSource);
 			UserDAO userDAO = new UserDAO();
 			userDAO.setDbResources(dbResources);
-			User user = userDAO.findUser(request.getParameter("userId"));
+			User user = userDAO.findUser(request.getParameter("userId")); */
+			User user = session.load(User.class, request.getParameter("userId"));
+			Hibernate.initialize(user);
 			if (user != null) {
 				if (request.getParameter("password").equals(user.getPassword())) {
 					// Call Entry JSP
-					userDAO.populateCategories(user);
-					userDAO.populateAccounts(user);
+			/*	TODO - removed to migrate to Hibernate
+			 * 	userDAO.populateCategories(user);
+					userDAO.populateAccounts(user);  */
 					String calculatedAmountAccounts = Arrays.toString(
 							user.getAccounts().stream()
 							.filter(p -> !p.isLocalCurrency())
@@ -94,7 +103,9 @@ public class LoginController extends HttpServlet {
 				request.setAttribute("errorMessage", "User id not found.");
 				request.setAttribute("action", "login");
 			}
-			dbResources.release();
+			/* TODO - removed to migrate to Hibernate
+			 * dbResources.release();
+			 */
 		}
 		else if(request.getParameter("cancel") != null) {
 			// If user pressed Cancel button, go back to login page.
@@ -102,6 +113,7 @@ public class LoginController extends HttpServlet {
 			request.setAttribute("action", "login");
 		}
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/Main.jsp");
+		session.close();
 		if (dispatcher != null) {
 			dispatcher.forward(request, response);
 		}
