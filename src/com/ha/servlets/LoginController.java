@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Hibernate;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -60,7 +61,12 @@ public class LoginController extends HttpServlet {
 			UserDAO userDAO = new UserDAO();
 			userDAO.setDbResources(dbResources);
 			User user = userDAO.findUser(request.getParameter("userId")); */
-			User user = session.load(User.class, request.getParameter("userId"));
+			org.hibernate.query.Query query = session.createQuery(
+					"select u " +
+					"from User u " +
+					"where u.userId = :userId")
+				.setParameter("userId", request.getParameter("userId"));
+			User user = (User) query.uniqueResult();
 			Hibernate.initialize(user);
 			if (user != null) {
 				if (request.getParameter("password").equals(user.getPassword())) {

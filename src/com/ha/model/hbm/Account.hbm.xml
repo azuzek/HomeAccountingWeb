@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Hibernate, Relational Persistence for Idiomatic Java
+  ~
+  ~ License: GNU Lesser General Public License (LGPL), version 2.1 or later.
+  ~ See the lgpl.txt file in the root directory or <http://www.gnu.org/licenses/lgpl-2.1.html>.
+  -->
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="com.ha.model">
+
+    <class name="Account" table="ACCOUNT">
+        <id name="id" column="ID">
+            <generator class="native"/>
+        </id>
+        <discriminator column="type" type="char"/>
+        <property name="name" type="string" column="NAME"/>
+        <many-to-one name="categoryId" column="CATEGORY_ID" class="Category"/>
+        <property name="balance" type="big_decimal" column="BALANCE"/>
+        <property name="active" type="boolean" column="ACTIVE"/>
+        <property name="localCurrency" type="boolean" column="local_currency"/>
+    </class>
+    
+    <subclass name="AssetAccount" discriminator-value="A"/>
+    <subclass name="ExpenseAccount" discriminator-value="E"/>
+    <subclass name="LiabilityAccount" discriminator-value="L"/>
+    <subclass name="RevenueAccount" discriminator-value="R"/>
+
+</hibernate-mapping>
