@@ -10,11 +10,16 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 /**
  * @author MLA
  *
  */
+// @Entity(name = "User")
 public class User extends ModelObject {
+	@Id
 	private String userId;
 	private String password;
 	private Set<Account> accounts = new HashSet<>();
