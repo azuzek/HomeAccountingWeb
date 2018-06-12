@@ -11,15 +11,21 @@ import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 /**
  * @author MLA
  *
  */
-// @Entity(name = "User")
+@Entity
+@Table(name = "USER")
 public class User extends ModelObject {
 	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private int id;
 	private String userId;
 	private String password;
 	private Set<Account> accounts = new HashSet<>();
@@ -111,5 +117,11 @@ public class User extends ModelObject {
 	}
 	public Category findCategory(int id) {
 		return Category.findCategory(getCategories(), id);
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
 	}
 }

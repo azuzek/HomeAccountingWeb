@@ -11,16 +11,15 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.hibernate.Hibernate;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
 
 import javax.servlet.http.Cookie;
 
 import com.ha.database.DBResources;
 import com.ha.database.EntryDAO;
 import com.ha.database.HADataSource;
-import com.ha.database.UserDAO;
 import com.ha.model.Account;
 import com.ha.model.Entry;
 import com.ha.model.PagedList;
@@ -61,7 +60,7 @@ public class LoginController extends HttpServlet {
 			UserDAO userDAO = new UserDAO();
 			userDAO.setDbResources(dbResources);
 			User user = userDAO.findUser(request.getParameter("userId")); */
-			org.hibernate.query.Query query = session.createQuery(
+			Query<?> query = session.createQuery(
 					"select u " +
 					"from User u " +
 					"where u.userId = :userId")
