@@ -20,7 +20,7 @@ import javax.persistence.Table;
  * @author MLA
  *
  */
-@Entity
+@Entity(name = "User")
 @Table(name = "USER")
 public class User extends ModelObject {
 	@Id
