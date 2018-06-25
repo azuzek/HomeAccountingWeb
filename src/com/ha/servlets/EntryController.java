@@ -16,6 +16,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+
 import com.ha.database.AccountDAO;
 import com.ha.database.DBResources;
 import com.ha.database.EntryDAO;
@@ -56,14 +60,6 @@ public class EntryController extends HttpServlet {
      */
     public EntryController() {
     }
-    
-    /**
-     * get a connection to the database
-     */
-    public void init() throws ServletException {
-    	// get HADataSource from Servlet context.
-    	haDataSource = (HADataSource) this.getServletContext().getAttribute("haDataSource");
-    }
 
 	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
@@ -87,6 +83,8 @@ public class EntryController extends HttpServlet {
 		} else if ("/EntryController/deleteCredit".equals(request.getServletPath())) {
 			--creditAccounts;
 		} else {
+			Session session = (Session) ((SessionFactory) this.getServletContext().getAttribute("sessionFactory")).openSession();
+			session.beginTransaction();
 			Boolean error = false;
 			Set<Account> usedAccounts = new HashSet<>();
 			EntryLine newEntryLine = null;
@@ -97,7 +95,7 @@ public class EntryController extends HttpServlet {
 			Set<Account> accountsByDebit = (Set<Account>) request.getSession().getAttribute("accountsByDebit");
 			String description = request.getParameter("description");
 			Entry entry = new Entry();
-			entry.setUserId(user.getId());
+			entry.setUser(user);
 			entry.setDescription(description);
 			String dateString = request.getParameter("date");
 			try {
@@ -122,8 +120,7 @@ public class EntryController extends HttpServlet {
 						totalDebitAmount = totalDebitAmount.add(amount.getTotal());
 						newEntryLine = new CreditEntryLine();
 						newEntryLine.setAmount(amount);
-						newEntryLine.setUserId(user.getId());
-						newEntryLine.setAccountId(debitAccount.getId());
+						newEntryLine.setAccount(debitAccount);
 						newEntryLine.setAccount(debitAccount);
 					}
 					entry.addDebit(newEntryLine);
@@ -152,8 +149,7 @@ public class EntryController extends HttpServlet {
 						totalCreditAmount = totalCreditAmount.add(amount.getTotal());
 						creditAccount.credit(amount.getTotal());
 						newEntryLine = new DebitEntryLine();
-						newEntryLine.setUserId(user.getId());
-						newEntryLine.setAccountId(creditAccount.getId());
+						newEntryLine.setAccount(creditAccount);
 						newEntryLine.setAccount(creditAccount);
 						newEntryLine.setAmount(amount);
 					}
@@ -170,10 +166,16 @@ public class EntryController extends HttpServlet {
 			if(!error) {
 				debitAccounts=1;
 				creditAccounts=1;
+				session.save(entry);
+				session.getTransaction().commit();
+			} else {
+				session.getTransaction().rollback();
 			}
 			request.setAttribute("description", description);
 			request.setAttribute("date", dateString);
-			persistEntry(entry, user);
+			// TODO: Commented out due to migration to Hibernate. Remove once finished with migration.
+			// persistEntry(entry, user);
+			session.close();
 		}
 		request.setAttribute("debitAmountValues", debitAmountValues);
 		request.setAttribute("creditAmountValues", creditAmountValues);
@@ -283,7 +285,7 @@ public class EntryController extends HttpServlet {
 		for(Set<EntryLine> entryLines : entryLinesList) {
 			for(EntryLine entryLine : entryLines) {
 				// TODO: Make sure that EntryLine has a reference to the Entry so that EntryLineDAO does not need an entry ID
-				entryLine.setEntryId(newEntryId);
+				// entryLine.setEntryId(newEntryId);
 				if(entryLine.getAmount().isCalculatedAmount()) {
 					quoteDAO.insertOrUpdateModelObject(((CalculatedAmount) entryLine.getAmount()).getQuote());
 				}

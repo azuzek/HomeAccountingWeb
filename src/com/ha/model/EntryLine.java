@@ -5,6 +5,9 @@ import javax.persistence.DiscriminatorType;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
@@ -16,7 +19,11 @@ import javax.persistence.Table;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="ACTION", discriminatorType=DiscriminatorType.CHAR)
 @DiscriminatorValue(value = "Z")
-public abstract class EntryLine extends UserFilteredObject {
+public abstract class EntryLine extends ModelObject {
+	
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private int id;
 	
 	@ManyToOne
 	@JoinColumn(name = "account_id", foreignKey = @ForeignKey(name = "entry_line_account_fk"))	

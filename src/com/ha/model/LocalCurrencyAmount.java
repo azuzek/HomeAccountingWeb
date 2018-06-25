@@ -2,6 +2,9 @@ package com.ha.model;
 
 import java.math.BigDecimal;
 
+import javax.persistence.Embeddable;
+
+@Embeddable
 public class LocalCurrencyAmount extends Amount {
 	BigDecimal total;
 

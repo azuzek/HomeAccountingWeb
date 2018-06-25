@@ -17,9 +17,6 @@ import org.hibernate.query.Query;
 
 import javax.servlet.http.Cookie;
 
-import com.ha.database.DBResources;
-import com.ha.database.EntryDAO;
-import com.ha.database.HADataSource;
 import com.ha.model.Account;
 import com.ha.model.Entry;
 import com.ha.model.PagedList;
@@ -31,7 +28,6 @@ import com.ha.model.User;
 @WebServlet(description = "Handle logins. Open Entry page if successfull, return back to login if not.", urlPatterns = { "/LoginController" })
 public class LoginController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private HADataSource haDataSource;
        
     /**
      * @see HttpServlet#HttpServlet()
@@ -41,25 +37,12 @@ public class LoginController extends HttpServlet {
     }
     
     /**
-     * get a connection to the database
-     */
-    public void init() throws ServletException {
-    	// get HADataSource from Servlet context.
-    	// haDataSource = (HADataSource) this.getServletContext().getAttribute("haDataSource");
-    }
-
-	/**
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		Session session = (Session) ((SessionFactory) this.getServletContext().getAttribute("sessionFactory")).openSession();
 		if (request.getParameter("ok") != null) {
 			// User pressed OK button. Process login
-/* 			DBResources dbResources = new DBResources();
-			dbResources.setHaDataSource(haDataSource);
-			UserDAO userDAO = new UserDAO();
-			userDAO.setDbResources(dbResources);
-			User user = userDAO.findUser(request.getParameter("userId")); */
 			Query<?> query = session.createQuery(
 					"select u " +
 					"from User u " +
@@ -70,9 +53,6 @@ public class LoginController extends HttpServlet {
 			if (user != null) {
 				if (request.getParameter("password").equals(user.getPassword())) {
 					// Call Entry JSP
-			/*	TODO - removed to migrate to Hibernate
-			 * 	userDAO.populateCategories(user);
-					userDAO.populateAccounts(user);  */
 					String calculatedAmountAccounts = Arrays.toString(
 							user.getAccounts().stream()
 							.filter(p -> !p.isLocalCurrency())
@@ -84,16 +64,7 @@ public class LoginController extends HttpServlet {
 						rememberMeCookie.setMaxAge(60*60*24*180); // Store cookie for 6 months
 						response.addCookie(rememberMeCookie);
 					}
-					EntryDAO entryDAO = new EntryDAO();
-					DBResources dbResources2 = new DBResources();
-					// TODO: Go back to dbResources if dbResources2 is not needed. It is probably not needed.
-					dbResources2.setHaDataSource(haDataSource);
-					entryDAO.setDbResources(dbResources2);
-					entryDAO.setUser(user);
-//					dbResources2.setAutoCommit(false);
-					PagedList<Entry> entries = new PagedList<>(entryDAO.selectModelObjects(), 20);
-					dbResources2.commit();
-					dbResources2.release();
+					PagedList<Entry> entries = new PagedList<>(user.getEntries(), 20);
 					request.getSession().setAttribute("entries", entries);
 					request.getSession().setAttribute("user", user);
 					request.getSession().setAttribute("calculatedAmountAccounts", calculatedAmountAccounts);
@@ -108,9 +79,6 @@ public class LoginController extends HttpServlet {
 				request.setAttribute("errorMessage", "User id not found.");
 				request.setAttribute("action", "login");
 			}
-			/* TODO - removed to migrate to Hibernate
-			 * dbResources.release();
-			 */
 		}
 		else if(request.getParameter("cancel") != null) {
 			// If user pressed Cancel button, go back to login page.

@@ -31,9 +31,9 @@ public class EntryLineDAO extends HADAO<EntryLine> {
 	@Override
 	String getValuesString(EntryLine entryLine) {
 		String valuesString = 
-				entryLine.getUserId()+","+
-				entryLine.getEntryId()+","+
-				entryLine.getAccountId()+",'"+
+//				entryLine.getUser().getId()+","+
+				entryLine.getEntry().getId()+","+
+				entryLine.getAccount().getId()+",'"+
 				entryLine.getAction()+"',";
 		if (entryLine.getAmount().isLocalCurrencyAmount()) {
 			valuesString = valuesString + entryLine.getAmount().getTotal()+",";
@@ -58,12 +58,12 @@ public class EntryLineDAO extends HADAO<EntryLine> {
 	@Override
 	EntryLine createModelObject(ResultSet resultSet) throws SQLException {
 		EntryLine newEntryLine = EntryLine.getEntryLine(resultSet.getString("ACTION").charAt(0));
-		newEntryLine.setUserId(resultSet.getInt("USER_ID"));
-		newEntryLine.setEntryId(resultSet.getInt("ENTRY_ID"));
-		newEntryLine.setAccountId(resultSet.getInt("ACCOUNT_ID"));
-		if(resultSet.getBigDecimal("AMOUNT") != null) {
+//		newEntryLine.setUserId(resultSet.getInt("USER_ID"));
+//		newEntryLine.setEntryId(resultSet.getInt("ENTRY_ID"));
+//		newEntryLine.setAccountId(resultSet.getInt("ACCOUNT_ID"));
+		if(resultSet.getBigDecimal("TOTAL") != null) {
 			LocalCurrencyAmount amount = new LocalCurrencyAmount();
-			amount.setTotal(resultSet.getBigDecimal("AMOUNT"));
+			amount.setTotal(resultSet.getBigDecimal("TOTAL"));
 			newEntryLine.setAmount(amount);
 		} else {
 			CalculatedAmount amount = new CalculatedAmount();
@@ -85,9 +85,9 @@ public class EntryLineDAO extends HADAO<EntryLine> {
 	@Override
 	String getColumnValuePairs(EntryLine entryLine) {
 		String columnValuePairs = 
-				"USER_ID="+entryLine.getUserId()+
-				",ENTRY_ID="+entryLine.getEntryId()+
-				",ACCOUNT_ID="+entryLine.getAccountId()+
+//				"USER_ID="+entryLine.getUserId()+
+				",ENTRY_ID="+entryLine.getEntry().getId()+
+				",ACCOUNT_ID="+entryLine.getAccount().getId()+
 				",ACTION='"+entryLine.getAction();
 		if (entryLine.getAmount().isLocalCurrencyAmount()) {
 			columnValuePairs = columnValuePairs + "',AMOUNT="+entryLine.getAmount().getTotal();

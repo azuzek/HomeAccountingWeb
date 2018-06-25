@@ -55,7 +55,7 @@ public class EntryDAO extends HADAO<Entry> {
 	Entry createModelObject(ResultSet resultSet) throws SQLException {
 		Entry entry = new Entry();
 		entry.setId(resultSet.getInt("ID"));
-		entry.setUserId(resultSet.getInt("USER_ID"));
+		// entry.setUserId(resultSet.getInt("USER_ID"));
 		entry.setDate(resultSet.getTimestamp("DATE").toLocalDateTime().toLocalDate());
 		entry.setDescription(resultSet.getString("DESCRIPTION"));
 		/* */
@@ -81,7 +81,7 @@ public class EntryDAO extends HADAO<Entry> {
 	@Override
 	String getValuesString(Entry entry) {;
 		return
-				entry.getUserId()+",'"+
+				entry.getUser().getId()+",'"+
 				entry.getDate().format(FORMATTER)+"','"+
 				entry.getDescription()+"'";
 	}
@@ -89,7 +89,7 @@ public class EntryDAO extends HADAO<Entry> {
 	@Override
 	String getColumnValuePairs(Entry entry) {
 		return 
-				"USER_ID="+entry.getUserId()+
+				"USER_ID="+entry.getUser().getId()+
 				",DATE='"+entry.getDate().format(FORMATTER)+
 				"',DESCRIPTION='"+entry.getDescription()+"'";
 	}

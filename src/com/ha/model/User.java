@@ -37,6 +37,15 @@ public class User extends ModelObject {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Category> categories = new HashSet<>();
 	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private Set<Entry> entries = new HashSet<>();
+	
+	public Set<Entry> getEntries() {
+		return entries;
+	}
+	public void setEntries(Set<Entry> entries) {
+		this.entries = entries;
+	}
 	public String getUserId() {
 		return userId;
 	}
