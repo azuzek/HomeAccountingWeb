@@ -41,7 +41,7 @@ public class UserDAO extends HADAO<User> {
 		accountDAO.setUser(user);
 		user.setAccounts(accountDAO.selectModelObjects());
 		for(Account account : user.getAccounts()) {
-			category = Category.findCategory(user.getCategories(), account.getCategoryId());
+			category = Category.findCategory(user.getCategories(), account.getCategory().getId());
 			category.addAccount(account);
 		}
 	}

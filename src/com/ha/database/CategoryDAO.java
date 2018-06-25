@@ -41,8 +41,8 @@ public class CategoryDAO extends HADAO<Category> {
 	@Override
 	String getValuesString(Category category) {
 		return 
-			category.getUserId()+","+
-			category.getParentId()+",'"+
+			category.getUser().getId()+","+
+			category.getParent().getId()+",'"+
 			category.getType().getCode()+"',"+
 			(category.isFixed()? 1: 0)+",'"+
 			category.getName()+"'";
@@ -56,8 +56,8 @@ public class CategoryDAO extends HADAO<Category> {
 	@Override
 	String getColumnValuePairs(Category category) {
 		return 
-				"USER_ID="+category.getUserId()+
-				",PARENT_ID='"+category.getParentId()+
+				"USER_ID="+category.getUser().getId()+
+				",PARENT_ID='"+category.getParent().getId()+
 				"',TYPE='"+category.getType()+
 				"',FIXED='"+(category.isFixed()? 1: 0)+
 				"',NAME='"+category.getName()+"'";
@@ -73,8 +73,8 @@ public class CategoryDAO extends HADAO<Category> {
 		}
 		category.setFixed(resultSet.getBoolean("FIXED"));
 		category.setId(resultSet.getInt("ID"));
-		category.setUserId(resultSet.getInt("USER_ID"));
-		category.setParentId(resultSet.getInt("PARENT_ID"));
+//		category.setUserId(resultSet.getInt("USER_ID"));
+//		category.setParentId(resultSet.getInt("PARENT_ID"));
 		char code = resultSet.getString("TYPE").charAt(0);
 		category.setType(AccountType.fromCode(code));
 		category.setName(resultSet.getString("NAME"));
@@ -84,7 +84,7 @@ public class CategoryDAO extends HADAO<Category> {
 	public Set<Category> getCategories() {
 		Set<Category> structuredCategories = new HashSet<>();
 		Set<Category> allCategories = selectModelObjects();
-		structuredCategories.addAll(allCategories.stream().filter(p -> p.getParentId() == 0).collect(Collectors.toSet()));
+		structuredCategories.addAll(allCategories.stream().filter(p -> p.getParent().getId() == 0).collect(Collectors.toSet()));
 		for(Category category : structuredCategories) {
 			addChildren(category, allCategories);
 		}
@@ -92,7 +92,7 @@ public class CategoryDAO extends HADAO<Category> {
 	}
 
 	private void addChildren(Category category, Set<Category> allCategories) {
-		for(Category child : allCategories.stream().filter(p -> p.getParentId() == category.getId()).collect(Collectors.toSet())) {
+		for(Category child : allCategories.stream().filter(p -> p.getParent().getId() == category.getId()).collect(Collectors.toSet())) {
 			category.addChild(child);
 			addChildren(child, allCategories);
 		}
@@ -143,7 +143,7 @@ public class CategoryDAO extends HADAO<Category> {
 	}
 	
 	public Category findParent(Category category) {
-		return this.findModelObject(category.getParentId());
+		return this.findModelObject(category.getParent().getId());
 	}
 	
 	public Category findRoot(Category category) {

@@ -65,7 +65,7 @@ public class AccountsController extends HttpServlet {
 			break;
 		case "/AccountsController/edit":
 			account = accountDAO.findModelObject(Integer.parseInt(request.getParameter("accountId")));
-			parentCategoryId = account.getCategoryId();
+			parentCategoryId = account.getCategory().getId();
 			request.setAttribute("accountId", account.getId());
 			request.setAttribute("name", account.getName());
 			request.setAttribute("balance", account.getBalance());

@@ -55,7 +55,7 @@ public class DeleteCategoryController extends HttpServlet {
 			accountDAO.setDbResources(dbResources);
 			accountDAO.setUser(user);
 			for(Account account : category.getInactiveAccounts()) {
-				account.setCategoryId(category.getParentId());
+				account.setCategory(category.getParent());
 				accountDAO.updateModelObject(account);
 			}
 			UserDAO userDAO = new UserDAO();

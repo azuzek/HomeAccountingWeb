@@ -90,7 +90,7 @@ public class LoginController extends HttpServlet {
 					dbResources2.setHaDataSource(haDataSource);
 					entryDAO.setDbResources(dbResources2);
 					entryDAO.setUser(user);
-					dbResources2.setAutoCommit(false);
+//					dbResources2.setAutoCommit(false);
 					PagedList<Entry> entries = new PagedList<>(entryDAO.selectModelObjects(), 20);
 					dbResources2.commit();
 					dbResources2.release();

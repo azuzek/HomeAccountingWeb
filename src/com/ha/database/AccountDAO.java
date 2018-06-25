@@ -70,7 +70,7 @@ public class AccountDAO extends HADAO<Account> {
 	String getValuesString(Account account) {
 		String valuesString = 
 				user.getId()+","+
-				account.getCategoryId()+",'"+
+				account.getCategory().getId()+",'"+
 				account.getName()+"','"+
 				account.getType()+"',"+
 				account.getBalance()+","+
@@ -91,7 +91,7 @@ public class AccountDAO extends HADAO<Account> {
 		Account account = null;
 		account = Account.getAccount(resultSet.getString("type").charAt(0));
 		account.setId(resultSet.getInt("ID"));
-		account.setCategoryId(resultSet.getInt("CATEGORY_ID"));
+//		account.setCategory(resultSet.getInt("CATEGORY_ID"));
 		account.setName(resultSet.getString("name"));
 		account.setBalance(resultSet.getBigDecimal("balance"));
 		account.setActive(resultSet.getBoolean("ACTIVE"));
@@ -111,7 +111,7 @@ public class AccountDAO extends HADAO<Account> {
 	String getColumnValuePairs(Account account) {
 		String columnValuePairs =
 				"USER_ID='"+user.getId()+
-				"',CATEGORY_ID='"+account.getCategoryId()+
+				"',CATEGORY_ID='"+account.getCategory().getId()+
 				"',NAME='"+account.getName()+
 				"',TYPE='"+account.getType()+
 				"',BALANCE="+account.getBalance()+

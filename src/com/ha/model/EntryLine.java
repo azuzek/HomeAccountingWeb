@@ -1,9 +1,31 @@
 package com.ha.model;
 
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.DiscriminatorType;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity(name = "EntryLine")
+@Table(name = "ENTRY_LINE")
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name="ACTION", discriminatorType=DiscriminatorType.CHAR)
+@DiscriminatorValue(value = "Z")
 public abstract class EntryLine extends UserFilteredObject {
+	
+	@ManyToOne
+	@JoinColumn(name = "account_id", foreignKey = @ForeignKey(name = "entry_line_account_fk"))	
 	private Account account;
-	private int entryId;
-	private int accountId;
+	
+	@ManyToOne
+	@JoinColumn(name = "entry_id", foreignKey = @ForeignKey(name = "entry_line_entry_fk"))
+	private Entry entry;
+	
 	private Amount amount;
 	
 	public static EntryLine getEntryLine(char action) {
@@ -36,31 +58,11 @@ public abstract class EntryLine extends UserFilteredObject {
 		return amount;
 	}
 
-	/**
-	 * @return the accountId
-	 */
-	public int getAccountId() {
-		return accountId;
+	public Entry getEntry() {
+		return entry;
 	}
 
-	/**
-	 * @param accountId the accountId to set
-	 */
-	public void setAccountId(int accountId) {
-		this.accountId = accountId;
-	}
-
-	/**
-	 * @return the entryId
-	 */
-	public int getEntryId() {
-		return entryId;
-	}
-
-	/**
-	 * @param entryId the entryId to set
-	 */
-	public void setEntryId(int entryId) {
-		this.entryId = entryId;
+	public void setEntry(Entry entry) {
+		this.entry = entry;
 	}
 }

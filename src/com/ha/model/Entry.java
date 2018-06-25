@@ -4,10 +4,36 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Entry extends UserFilteredObject {
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+@Entity(name = "Entry")
+@Table(name = "ENTRY")
+public class Entry extends ModelObject {
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private int id;
+	
+	@ManyToOne
+	@JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "entry_user_fk"))
+	private User user;
+	
+	@OneToMany(mappedBy = "entry", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<EntryLine> debits = new HashSet<>();
+	
+	@OneToMany(mappedBy = "entry", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<EntryLine> credits = new HashSet<>();
+	
 	private String description;
+	
 	private LocalDate date;
 	
 	public LocalDate getDate() {
@@ -69,5 +95,13 @@ public class Entry extends UserFilteredObject {
 						.getAccount()
 						.getName();
 		}
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 }

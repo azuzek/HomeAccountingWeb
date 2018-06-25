@@ -36,7 +36,21 @@
         
         <!-- Names the annotated entity class -->
         <mapping class="com.ha.model.User"/>
-
+		<mapping class="com.ha.model.Account"/>
+		<mapping class="com.ha.model.AssetAccount"/>
+		<mapping class="com.ha.model.ExpenseAccount"/>
+		<mapping class="com.ha.model.LiabilityAccount"/>
+		<mapping class="com.ha.model.RevenueAccount"/>
+		<mapping class="com.ha.model.Category"/>
+		<mapping class="com.ha.model.Instrument"/>
+		<mapping class="com.ha.model.BuySellPriceInstrument"/>
+		<mapping class="com.ha.model.SinglePriceInstrument"/>
+		<mapping class="com.ha.model.Quote"/>
+		<mapping class="com.ha.model.Entry"/>
+		<mapping class="com.ha.model.EntryLine"/>
+		<mapping class="com.ha.model.CreditEntryLine"/>
+		<mapping class="com.ha.model.DebitEntryLine"/>
+		
     </session-factory>
 
 </hibernate-configuration>

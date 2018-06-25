@@ -10,6 +10,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+
 import com.ha.database.AccountDAO;
 import com.ha.database.CategoryDAO;
 import com.ha.database.DBResources;
@@ -17,6 +22,7 @@ import com.ha.database.HADataSource;
 import com.ha.database.InstrumentDAO;
 import com.ha.database.UserDAO;
 import com.ha.model.Account;
+import com.ha.model.Category;
 import com.ha.model.Instrument;
 import com.ha.model.User;
 
@@ -48,6 +54,7 @@ public class AccountController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO: Error handling. Name could be empty or too long. Balance could not be a valid BigDecimal string.
+		Session session = (Session) ((SessionFactory) this.getServletContext().getAttribute("sessionFactory")).openSession();
 		Boolean error = false;
 		User user = (User) request.getSession().getAttribute("user");
 		DBResources dbResources = new DBResources();
@@ -57,16 +64,24 @@ public class AccountController extends HttpServlet {
 		categoryDAO.setDbResources(dbResources);
 		if(request.getParameter("ok") != null) {
 			Account account = null;
+			Category category = null;
 			UserDAO userDAO = new UserDAO();
 			userDAO.setDbResources(dbResources);
 			AccountDAO accountDAO = new AccountDAO();
 			accountDAO.setUser(user);
 			accountDAO.setDbResources(dbResources);
+			Query<?> query = session.createQuery(
+					"select c " +
+					"from Category c " +
+					"where u.id = :categoryId");
 			if("add".equals(request.getParameter("operation"))) {
 				try {
 					account = Account.getAccount(request.getParameter("type").charAt(0));
 					account.setName(request.getParameter("name"));
-					account.setCategoryId(Integer.valueOf(request.getParameter("parentId")));
+					query.setParameter("categoryId", request.getParameter("parentId"));
+					category = (Category) query.uniqueResult();
+					Hibernate.initialize(category);
+					account.setCategory(category);
 					account.setBalance(new BigDecimal(request.getParameter("balance")));
 					if(request.getParameter("isLocalCurrency").equals("No")) {
 						account.setLocalCurrency(false);
@@ -95,7 +110,10 @@ public class AccountController extends HttpServlet {
 			} else if ("edit".equals(request.getParameter("operation"))) {
 				account = accountDAO.findModelObject(Integer.valueOf(request.getParameter("accountId")));
 				account.setName(request.getParameter("name"));
-				account.setCategoryId(Integer.valueOf(request.getParameter("category")));
+				query.setParameter("categoryId", request.getParameter("category"));
+				category = (Category) query.uniqueResult();
+				Hibernate.initialize(category);
+				account.setCategory(category);
 				accountDAO.updateModelObject(account);
 			}
 			if (account.getName() == null || account.getName().equals("")) {
@@ -113,6 +131,7 @@ public class AccountController extends HttpServlet {
 			request.setAttribute("action", "account");
 		}
 		dbResources.release();
+		session.close();
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/Main.jsp");
 		if (dispatcher != null) {
 			dispatcher.forward(request, response);

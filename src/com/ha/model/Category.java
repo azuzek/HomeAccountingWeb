@@ -4,12 +4,36 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class Category extends UserFilteredObject {
-	private int parentId;
+import javax.persistence.CascadeType;
+import javax.persistence.Convert;
+import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+
+@Entity(name = "Category")
+@Table(name = "CATEGORY")
+public class Category extends ModelObject {
+	@Id
+	@GeneratedValue(strategy=GenerationType.IDENTITY)
+	private int id;
+	@ManyToOne
+	private Category parent;
+	@ManyToOne
+	@JoinColumn(name = "user_id", foreignKey = @ForeignKey(name = "category_user_fk"))
+	private User user;
+	@Convert(converter = AccountTypeConverter.class)
 	private AccountType type;
 	private boolean fixed;
 	private String name;
+	@OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Category> children = new HashSet<>();
+	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Account> accounts = new HashSet<>();
 		
 	public static Category findCategory(Set<Category> categories, int id) {
@@ -27,12 +51,12 @@ public class Category extends UserFilteredObject {
 		return result;
 	}
 	
-	public int getParentId() {
-		return parentId;
+	public Category getParent() {
+		return parent;
 	}
 	
-	public void setParentId(int parentId) {
-		this.parentId = parentId;
+	public void setParent(Category aParent) {
+		this.parent = aParent;
 	}
 	
 	public AccountType getType() {
@@ -94,5 +118,21 @@ public class Category extends UserFilteredObject {
 	
 	public void removeAccount(Account account) {
 		accounts.remove(account);
+	}
+
+	public int getId() {
+		return id;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+
+	public User getUser() {
+		return user;
+	}
+
+	public void setUser(User user) {
+		this.user = user;
 	}
 }

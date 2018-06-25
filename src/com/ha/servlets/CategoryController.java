@@ -9,8 +9,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.ha.database.CategoryDAO;
-import com.ha.database.DBResources;
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+
 import com.ha.database.HADataSource;
 import com.ha.model.Category;
 import com.ha.model.User;
@@ -45,26 +48,43 @@ public class CategoryController extends HttpServlet {
 		// This only handles the "add" case because data input is needed. 
 		// Deletions are handled by CategoriesController directly.
 		// TODO: Handle edits (change of category name)
-		DBResources dbResources = new DBResources();
-		dbResources.setHaDataSource(haDataSource);
+		Session session = (Session) ((SessionFactory) this.getServletContext().getAttribute("sessionFactory")).openSession();
+		/* TODO: Commented out due to migration to Hibernate. Remove when migration complete.
+		 * DBResources dbResources = new DBResources();
+		 * dbResources.setHaDataSource(haDataSource);
+		 * CategoryDAO categoryDAO = new CategoryDAO();
+		 */
 		Category category;
-		CategoryDAO categoryDAO = new CategoryDAO();
 		User user = (User) request.getSession().getAttribute("user");
+		/* TODO: Commented out due to migration to Hibernate. Remove when migration complete.
 		categoryDAO.setUser(user);
 		categoryDAO.setDbResources(dbResources);
-		category = new Category();
+		*/
+		Query<?> query = session.createQuery(
+				"select c " +
+				"from Category c " +
+				"where c.id = :categoryId");
 		if (!request.getParameter("id").isEmpty()) {
-			category.setId(Integer.parseInt(request.getParameter("id")));
+			query.setParameter("categoryId", request.getParameter("id"));
+			category = (Category) query.uniqueResult();
+			Hibernate.initialize(category);
+			// category.setId(Integer.parseInt(request.getParameter("id")));
+		} else {
+			category = new Category();
 		}
-		category.setParentId(Integer.parseInt(request.getParameter("parentId")));
+		query.setParameter("categoryId", request.getParameter("parentId"));
+		Category parent = (Category) query.uniqueResult();
+		Hibernate.initialize(category);
+		category.setParent(parent);
 		category.setName(request.getParameter("name"));
-		category.setUserId(user.getId());
-		Category parent = user.findCategory(category.getParentId());
-		parent.addChild(category);
+		category.setUser(user);
+		// Category parent = user.findCategory(category.getParentId());
+		// parent.addChild(category);
 		category.setType(parent.getType());
-		categoryDAO.insertModelObject(category);
+		//categoryDAO.insertModelObject(category);
 		request.setAttribute("action", "accounts");
-		dbResources.release();
+		// dbResources.release();
+		session.close();
 		RequestDispatcher dispatcher = request.getRequestDispatcher("/Main.jsp");
 		if (dispatcher != null) {
 			dispatcher.forward(request, response);

@@ -2,6 +2,12 @@ package com.ha.model;
 
 import java.math.BigDecimal;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+
+
+@Entity(name = "ExpenseAccount")
+@DiscriminatorValue(value = "E")
 public class ExpenseAccount extends Account {
 public char getType () {
 	return 'E';

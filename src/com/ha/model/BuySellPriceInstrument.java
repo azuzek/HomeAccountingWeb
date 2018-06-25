@@ -3,8 +3,19 @@ package com.ha.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.OneToMany;
+
+
+@Entity(name = "BuySellPriceInstrument")
+@DiscriminatorValue(value = "B")
 public class BuySellPriceInstrument extends Instrument {
+	@OneToMany(mappedBy = "instrument", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Quote> buyQuotes = new HashSet<>();
+
+	@OneToMany(mappedBy = "instrument", cascade = CascadeType.ALL, orphanRemoval = true)
 	private Set<Quote> sellQuotes = new HashSet<>();
 	
 	public void addBuyQuote(Quote buyQuote) {
